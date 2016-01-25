@@ -1,0 +1,39 @@
+.photo-container {
+  height: 100%;
+}
+
+.flexy {
+  display: flex;
+  flex-flow: column center;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumbnail {
+  width: 80%;
+  margin-top: 5%;
+}
+
+.subheader {
+  display: inline;
+}
+
+a {
+  color: #333333;
+}
+
+a :hover {
+  color: #333333;
+}
+
+.upvote :hover {
+  color: orangered;
+}
+
+.downvote :hover {
+  color: #9494FF;
+}
+
+.sub-btn {
+  margin-bottom: 5%;
+}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html ng-app="seddit">
+  <head>
+    <meta charset="utf-8">
+
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.4/angular.js"></script>
+
+    <!-- <script src="node_modules/moment/moment.js"></script>
+    <script src="node_modules/angular-moment/angular-moment.js"></script> -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/1.0.0-beta.3/angular-moment.min.js"></script>
+
+    <script src="./main.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <title>Seddit</title>
+  </head>
+  <body ng-controller="redditCards" ng-init="getData()">
+    <header>
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Seddit</a>
+          <ul class="nav navbar-nav">
+            <li><a href="" ng-click="showNewPostForm()"><span class="glyphicon glyphicon-plus" ></span>Submit Post</a></li>
+          </ul>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <form class="navbar-form navbar-left" role="search">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search">
+              </div>
+            <!-- <button type="submit" class="btn btn-default">Submit</button> -->
+            </form>
+              <select class="dropdown">
+                <a href="#" class="dropdown-toggle" ng-click="showDropdown()"> Filter Results <span class="caret"></span></a>
+                <ul class="dropdown-menu ng-hide" ng-show="$scope.dropdown">
+                  <li><a href="-score">Highest Score</a></li>
+                  <li><a href="+score">Lowest Score</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="-created">Newest</a></li>
+                  <li><a href="+created">Oldest</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="+title">Title Ascending</a></li>
+                  <li><a href="-title">Title Descending</a></li>
+                  <li role="separator" class="divider"></li>
+
+                  <li><a href="#">One more separated link</a></li>
+                </ul>
+              </select>
+
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+    </header>
+
+    <main>
+      <!-- New Post Form -->
+      <section>
+        <div class="panel panel-default col-lg-12 ng-hide" ng-show="newPostForm">
+          <h2>Create a New Post</h2>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">/u/</span>
+            <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" ng-model="newUsername">
+          </div>
+          <div class="row"></div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">Title</span>
+            <input type="text" class="form-control" placeholder="Pick a good title!" aria-describedby="basic-addon1" ng-model="newTitle">
+          </div>
+          <div class="row"></div>
+          <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1">URL</span>
+            <input type="text" class="form-control" placeholder="Photo URL" aria-describedby="basic-addon1" ng-model="newPhotoURL">
+          </div>
+          <div class="row"></div>
+          <button role="button" class="btn-block btn-info sub-btn" ng-click="addPost()">Submit</button>
+        </div>
+      </section>
+
+      <div class="container-fluid col-lg-12" ng-repeat="post in posts | orderBy: '-score'">
+
+        <!-- Reddit Card -->
+        <section class="col-lg-10 col-lg-offset-1">
+          <div class="panel panel-default">
+            <div class="col-lg-3 photo-container media-middle flexy">
+              <img class="thumbnail col-lg-12 media-object media-middle" ng-src="{{post.photo}}" alt="test image" />
+            </div>
+            <div class="col-lg-9">
+              <h3> {{post.title}}</h3>
+              <div class="row"></div>
+
+              <h4><a href=""
+                ng-click="upvote(post)"
+                class="upvote"
+                ng-mouseenter="hover = true"
+                ng-mouseleave="hover = false"
+                ><span class="glyphicon glyphicon-arrow-up"
+                ></span></a>
+
+                <a href="" ng-click="downvote(post)"
+                class="downvote"
+                ng-mouseenter="hover = true"
+                ng-mouseleave="hover = false"
+                ><span class="glyphicon glyphicon-arrow-down"
+                ></span></a>
+
+                <span>{{post.score}}</span><span class="pull-right"><a href="https://www.reddit.com/u/{{post.author}}" target="_blank">/u/{{post.author}}</a></span>
+              </h4>
+              <div class="row"></div>
+              <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                  <ul class="nav navbar-nav">
+
+                    <li class="navbar-text">
+                       {{post.created | amFromUnix | amCalendar}} |
+                    </li>
+                    <li><a href="" ng-click="showComments(post)"><span class="glyphicon glyphicon-plus" ></span>Comments |</a></li>
+                    <li><a href="" ng-click="showForm(post)"><span class="glyphicon glyphicon-plus" ></span>Add Comment</a></li>
+                  </ul>
+                </div>
+              </nav>
+            </div>
+          </div>
+          <!-- Comment Form -->
+          <div class="panel panel-default col-lg-12 ng-hide" ng-show="post.commentFormShow">
+            <h2>Add a Comment</h2>
+            <div class="input-group">
+              <span class="input-group-addon" id="basic-addon1">/u/</span>
+              <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" ng-model="username">
+            </div>
+            <textarea rows="3" cols="100" class="form-control" placeholder="Enter your comment!" ng-model="commentBody" ></textarea>
+            <div class="row"></div>
+            <button role="button" class="btn-block btn-info sub-btn" ng-click="postComment(post)">Submit</button>
+          </div>
+          <!-- Comment Panel -->
+          <div class="panel panel-default col-lg-12 ng-hide" ng-show="post.commentShow">
+            <h2 class="ng-hide" ng-show="post.commentShow">Comments</h2>
+            <div class="well col-lg-8 col-lg-offset-2" ng-hide="post.comments.length">
+              <p >No comments yet.</p>
+            </div>
+            <div class="" ng-repeat="comment in post.comments">
+              <div class="well col-lg-8 col-lg-offset-2">
+                <h4><a href="">/u/{{comment.username}}</a></h4>
+                <p>{{comment.commentBody}}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+
+    </footer>
+  </body>
+</html>
